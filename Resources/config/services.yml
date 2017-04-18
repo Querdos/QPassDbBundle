@@ -4,3 +4,5 @@ services:
         calls:
             - [ setQDatabaseManager, [ '@qpdb.manager.qdatabase' ]]
             - [ setQPasswordManager, [ '@qpdb.manager.qpassword' ]]
+            - [ setValidator,        [ '@validator']]
+            - [ setDbDir,            [ '%q_pass_db.db_dir%']]
