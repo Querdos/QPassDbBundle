@@ -15,12 +15,12 @@ class BaseManager
     /**
      * @var EntityManager
      */
-    private $entityManager;
+    protected $entityManager;
 
     /**
      * @var EntityRepository
      */
-    private $repository;
+    protected $repository;
 
     /**
      * @param $entity
