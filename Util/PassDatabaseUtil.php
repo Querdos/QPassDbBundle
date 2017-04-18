@@ -85,7 +85,7 @@ class PassDatabaseUtil
             // creating main table
             sqlite_query(
                 $db,
-                RequestUtil::create_table()
+                SqlQueryUtil::create_table()
             );
         } else {
             // opening failed, raising exception
@@ -123,7 +123,7 @@ class PassDatabaseUtil
         // opening it
         if ($db = sqlite_open($file_db, 0666, $error)) {
             // request for the insertion
-            sqlite_query($db, RequestUtil::insert_password($pass_to_add, $pass_id));
+            sqlite_query($db, SqlQueryUtil::insert_password($pass_to_add, $pass_id));
         } else {
             // error occured, raising exception
             throw new Exception($error);
@@ -159,7 +159,7 @@ class PassDatabaseUtil
         // opening it with sqlite
         if ($db = sqlite_open($file_db, 0666, $error)) {
             // retrieving all passwords
-            $query          = sqlite_query($db, RequestUtil::select_all_password());
+            $query          = sqlite_query($db, SqlQueryUtil::select_all_password());
         } else {
             // unable to open the database, raising error
             throw new Exception($error);
@@ -194,7 +194,7 @@ class PassDatabaseUtil
         // trying to open the database
         if ($db = sqlite_open($file_db, 0666, $error)) {
             // retrieving the password
-            $query = sqlite_query($db, RequestUtil::select_password($qpassword->getPassId()));
+            $query = sqlite_query($db, SqlQueryUtil::select_password($qpassword->getPassId()));
         } else {
             // unable to open the database, raising error
             throw new Exception($error);

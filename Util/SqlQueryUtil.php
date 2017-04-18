@@ -8,7 +8,7 @@ namespace Querdos\QPassDbBundle\Util;
  * @package Querdos\QPassDbBundle\Util
  * @author  Hamza ESSAYEGH <hamza.essayegh@protonmail.com>
  */
-class RequestUtil
+class SqlQueryUtil
 {
     /**
      * Build the table creation sql request
