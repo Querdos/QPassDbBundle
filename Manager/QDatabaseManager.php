@@ -23,4 +23,16 @@ class QDatabaseManager extends BaseManager
 
         parent::create($qdatabase);
     }
+
+    /**
+     * Return a QDatabase with the given dbname
+     *
+     * @param $dbname
+     *
+     * @return QDatabase
+     */
+    public function readByDatabaseName($dbname)
+    {
+        return $this->repository->findOneByDbname($dbname);
+    }
 }
