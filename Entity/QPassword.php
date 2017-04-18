@@ -2,6 +2,7 @@
 
 namespace Querdos\QPassDbBundle\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class QPassword
@@ -17,16 +18,25 @@ class QPassword
 
     /**
      * @var QDatabase
+     * @Assert\NotNull(
+     *     message="QDatabase cannot be null"
+     * )
      */
     private $qdatabase;
 
     /**
      * @var string
+     * @Assert\NotBlank(
+     *     message="Label cannot be blank"
+     * )
      */
     private $label;
 
     /**
      * @var int
+     * @Assert\NotNull(
+     *     message="Pass id cannot be null"
+     * )
      */
     private $pass_id;
 

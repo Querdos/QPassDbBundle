@@ -2,6 +2,7 @@
 
 namespace Querdos\QPassDbBundle\Entity;
 
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class QDatabase
@@ -17,11 +18,19 @@ class QDatabase
 
     /**
      * @var string
+     *
+     * @Assert\NotBlank(
+     *     message="Database name cannot be blank"
+     * )
      */
     private $dbname;
 
     /**
      * @var string
+     *
+     * @Assert\NotBlank(
+     *     message="Password cannot be blank"
+     * )
      */
     private $password;
 
