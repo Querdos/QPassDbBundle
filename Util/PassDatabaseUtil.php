@@ -85,9 +85,7 @@ class PassDatabaseUtil
             // creating main table
             sqlite_query(
                 $db,
-                <<<EOT
-CREATE TABLE passwords (id INTEGER AUTOINCREMENT PRIMARY KEY NOT NULL, password VARCHAR(255) NOT NULL, pass_id VARCHAR(100) NOT NULL)
-EOT
+                RequestUtil::create_table()
             );
         } else {
             // opening failed, raising exception
@@ -125,12 +123,7 @@ EOT
         // opening it
         if ($db = sqlite_open($file_db, 0666, $error)) {
             // request for the insertion
-            $insert_req = sprintf(
-                "INSERT INTO passwords (password, pass_id) VALUES ('%s', '%s')",
-                    $pass_to_add,
-                    $pass_id
-            );
-            sqlite_query($db, $insert_req);
+            sqlite_query($db, RequestUtil::insert_password($pass_to_add, $pass_id));
         } else {
             // error occured, raising exception
             throw new Exception($error);
@@ -145,6 +138,8 @@ EOT
 
     /**
      * Retrieve all password for the given database with the given master password
+     *
+     * No association is made
      *
      * @param QDatabase $database
      * @param string    $password
@@ -164,7 +159,7 @@ EOT
         // opening it with sqlite
         if ($db = sqlite_open($file_db, 0666, $error)) {
             // retrieving all passwords
-            $query  = sqlite_query($db, "SELECT * FROM passwords");
+            $query          = sqlite_query($db, RequestUtil::select_all_password());
         } else {
             // unable to open the database, raising error
             throw new Exception($error);
@@ -175,6 +170,41 @@ EOT
 
         // returning data
         return sqlite_fetch_all($query, SQLITE_ASSOC);
+    }
+
+    /**
+     * Retrieve a password for the given database with the given pass_id
+     *
+     * @param QDatabase $database
+     * @param string    $password
+     * @param QPassword $qpassword
+     *
+     * @return string
+     */
+    public function get_password(QDatabase $database, $password, QPassword $qpassword)
+    {
+        // checking password
+        if (!password_verify($password, $database->getPassword())) {
+            throw new Exception("Invalid password");
+        }
+
+        // unlocking database
+        $file_db = $this->unlock_database($database->getDbname(), $password);
+
+        // trying to open the database
+        if ($db = sqlite_open($file_db, 0666, $error)) {
+            // retrieving the password
+            $query = sqlite_query($db, RequestUtil::select_password($qpassword->getPassId()));
+        } else {
+            // unable to open the database, raising error
+            throw new Exception($error);
+        }
+
+        // locking the database
+        $this->lock_database($file_db, $database->getDbname(), $password);
+
+        // returning the result
+        return sqlite_fetch_single($query);
     }
 
     /**
