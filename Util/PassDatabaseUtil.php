@@ -106,6 +106,7 @@ EOT
      *
      * @param QDatabase $database
      * @param string    $password
+     * @param string    $pass_to_add
      * @param string    $label
      */
     public function add_password(QDatabase $database, $password, $pass_to_add, $label)
@@ -219,7 +220,7 @@ EOT
     }
 
     /**
-     * Unlock database with the given password and put it to /tmp
+     * Unlock a given database with the given password and put it to /tmp
      *
      * @param string $db_name
      * @param string $password
