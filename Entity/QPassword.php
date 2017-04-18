@@ -33,9 +33,9 @@ class QPassword
     private $label;
 
     /**
-     * @var int
-     * @Assert\NotNull(
-     *     message="Pass id cannot be null"
+     * @var string
+     * @Assert\NotBlank(
+     *     message="Pass id cannot be blank"
      * )
      */
     private $pass_id;
@@ -112,7 +112,7 @@ class QPassword
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getPassId()
     {
@@ -120,7 +120,7 @@ class QPassword
     }
 
     /**
-     * @param int $pass_id
+     * @param string $pass_id
      *
      * @return QPassword
      */
