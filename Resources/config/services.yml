@@ -1,4 +1,6 @@
 services:
-#    q_pass_db.example:
-#        class: Querdos\QPassDbBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+    qpdb.util.pass_database:
+        class: Querdos\QPassDbBundle\Util\PassDatabaseUtil
+        calls:
+            - [ setQDatabaseManager, [ '@qpdb.manager.qdatabase' ]]
+            - [ setQPasswordManager, [ '@qpdb.manager.qpassword' ]]
