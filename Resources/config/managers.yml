@@ -1,0 +1,12 @@
+services:
+    qpdb.manager.qdatabase:
+        class: Querdos\QPassDbBundle\Manager\QDatabaseManager
+        calls:
+            - [ setRepository,    [ '@qpdb.repository.qdatabase' ]]
+            - [ setEntityManager, [ '@doctrine.orm.entity_manager']]
+
+    qpdb.manager.qpassword:
+        class: Querdos\QPassDbBundle\Manager\QPasswordManager
+        calls:
+            - [ setRepository,    [ '@qpdb.repository.qpassword' ]]
+            - [ setEntityManager, [ '@doctrine.orm.entity_manager']]
