@@ -1,0 +1,29 @@
+{
+  "name": "querdos/qpass-db-bundle",
+  "description": "Symfony bundle for storing passwords in separate database (encrypted)",
+  "authors": [
+    {
+      "name": "Hamza ESSAYEGH",
+      "email": "hamza.essayegh@protonmail.com"
+    }
+  ],
+  "type": "symfony-bundle",
+  "keywords": [
+    "security encryption database passwords doctrine symfony"
+  ],
+  "license": [
+    "MIT"
+  ],
+  "require": {
+
+  },
+  "autoload": {
+    "psr-0": {
+      "Querdos\\QPassDbBundle": ""
+    }
+  },
+  "target-dir": "Querdos/QPassDbBundle",
+  "repositories": [
+    {}
+  ]
+}
