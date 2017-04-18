@@ -1,0 +1,22 @@
+Querdos\QPassDbBundle\Entity\QDatabase:
+    type:             entity
+    table:            qpdb_qdatabase
+    repositoryClass:  Querdos\QPassDbBundle\Repository\QDatabaseRepository
+    id:
+        id:
+            type:         integer
+            id:           true
+            generator:
+                strategy: AUTO
+
+    fields:
+        dbname:
+            type:         string
+            length:       125
+            nullable:     false
+            unique:       true
+
+        password:
+            type:         text
+            nullable:     false
+            unique:       false

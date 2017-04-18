@@ -1,0 +1,10 @@
+services:
+    qpdb.repository.qdatabase:
+        class:      Querdos\QPassDbBundle\Repository\QDatabaseRepository
+        factory:    [ '@doctrine.orm.entity_manager', 'getRepository' ]
+        arguments:  [ 'QPassDbBundle:QDatabase']
+
+    qpdb.repository.qpassword:
+        class:      Querdos\QPassDbBundle\Repository\QPasswordRepository
+        factory:    [ '@doctrine.orm.entity_manager', 'getRepository' ]
+        arguments:  [ 'QPassDbBundle:QPassword']
