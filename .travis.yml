@@ -15,15 +15,15 @@ matrix:
         - php: hhvm
         - php: nightly
         - php: 7.0
-            env: COVERAGE=yes
+          env: COVERAGE=yes
         - php: 7.0
-            env: COMPOSER_FLAGS='--prefer-lowest --prefer-stable'
+          env: COMPOSER_FLAGS='--prefer-lowest --prefer-stable'
         - php: 7.0
-            env: SYMFONY_VERSION=2.8.*
+          env: SYMFONY_VERSION=2.8.*
         - php: 7.0
-            env: SYMFONY_VERSION=3.0.*
+          env: SYMFONY_VERSION=3.0.*
         - php: 7.0
-            env: SYMFONY_VERSION=3.1.*
+          env: SYMFONY_VERSION=3.1.*
     allow_failures:
         - php: hhvm
         - php: nightly
