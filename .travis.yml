@@ -8,28 +8,17 @@ cache:
 
 matrix:
     include:
-        - php: 5.5
         - php: 5.6
-        - php: hhvm
-        - php: nightly
+          env: PHPUNIT_VERSION='^5.7'
         - php: 7.0
-          env: COVERAGE=yes
-        - php: 7.0
-          env: COMPOSER_FLAGS='--prefer-lowest --prefer-stable'
-        - php: 7.0
-          env: SYMFONY_VERSION=2.8.*
-        - php: 7.0
-          env: SYMFONY_VERSION=3.0.*
-        - php: 7.0
-          env: SYMFONY_VERSION=3.1.*
-    allow_failures:
-        - php: hhvm
-        - php: nightly
-    fast_finish: true
+          env: PHPUNIT_VERSION='^6.1'
 
 before_script:
     - curl -s http://getcomposer.org/installer | php --
     - php composer.phar install --dev
     - php composer.phar require symfony/symfony:dev-master
     - php composer.phar require symfony/framework-bundle:dev-master
+    - php composer.phar require phpunit/phpunit:${PHPUNIT_VERSION}
 
+script:
+    - vendor/bin/phpunit
