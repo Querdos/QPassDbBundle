@@ -29,13 +29,8 @@ matrix:
         - php: nightly
     fast_finish: true
 
-before_install:
-    - if [[ $TRAVIS_PHP_VERSION != hhvm && $COVERAGE != yes ]]; then phpenv config-rm xdebug.ini; fi;
-    - composer self-update
-
-install:
-    - if [[ $SYMFONY_VERSION != "" ]]; then composer require "symfony/framework-bundle:${SYMFONY_VERSION}" "symfony/dependency-injection:${SYMFONY_VERSION}" --no-update -n; composer require "symfony/twig-bundle:${SYMFONY_VERSION}" --no-update -n; fi
-    - composer update $COMPOSER_FLAGS --prefer-dist --no-interaction'
-
-script: if [[ $COVERAGE = yes ]]; then php phpunit --verbose --coverage-clover=coverage.clover; else php phpunit --verbose; fi
+before_script:
+    - curl -s http://getcomposer.org/installer | php --
+    - php composer.phar install --dev
+    - php composer.phar require symfony/framework-bundle:dev-master
 
