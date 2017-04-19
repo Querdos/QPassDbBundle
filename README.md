@@ -1,4 +1,6 @@
 # QPassDbBundle
+[![Build Status](https://travis-ci.org/Querdos/QPassDbBundle.svg?branch=master)](https://travis-ci.org/Querdos/QPassDbBundle)  
+
 A symfony bundle that allow you to create local database for password storage
 
 Installation
