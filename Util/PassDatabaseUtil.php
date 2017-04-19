@@ -85,6 +85,11 @@ class PassDatabaseUtil
             throw new Exception("Database exists");
         }
 
+        // checking if the file doesn't exists
+        if (file_exists($this->db_dir . "/{$dbname}.qdb.enc")) {
+            unlink($this->db_dir . "/{$dbname}.qdb.enc"); // if present in dir but not in database <=> problem
+        }
+
         // opening sqlite database
         if ($db = sqlite_open("{$this->db_dir}/{$dbname}.qdb", 0666, $error)) {
             // creating main table
