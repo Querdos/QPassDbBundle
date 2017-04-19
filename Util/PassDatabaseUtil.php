@@ -4,13 +4,13 @@ namespace Querdos\QPassDbBundle\Util;
 use Querdos\QPassDbBundle\Entity\QDatabase;
 use Querdos\QPassDbBundle\Entity\QPassword;
 use Querdos\QPassDbBundle\Exception\ExistingDatabaseException;
+use Querdos\QPassDbBundle\Exception\InvalidParameterException;
 use Querdos\QPassDbBundle\Exception\InvalidPasswordException;
 use Querdos\QPassDbBundle\Manager\QDatabaseManager;
 use Querdos\QPassDbBundle\Manager\QPasswordManager;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\ProcessBuilder;
-use Symfony\Component\Routing\Exception\InvalidParameterException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -47,6 +47,7 @@ class PassDatabaseUtil
      * @param string $password
      *
      * @throws ExistingDatabaseException
+     * @throws InvalidParameterException
      */
     public function create_database($dbname, $password)
     {
@@ -123,13 +124,14 @@ class PassDatabaseUtil
      * @param string    $label
      *
      * @return string
+     * @throws InvalidParameterException
      * @throws InvalidPasswordException
      */
     public function add_password(QDatabase $database, $password, $pass_to_add, $label)
     {
         // first of all, checking that the password match
         if (!password_verify($password, $database->getPassword())) {
-            throw new InvalidPasswordException("Password doesn't match");
+            throw new InvalidPasswordException("Passwords doesn't match");
         }
 
         // checking label
@@ -178,12 +180,13 @@ class PassDatabaseUtil
      * @param string    $password
      *
      * @return array
+     * @throws InvalidPasswordException
      */
     public function get_all_password(QDatabase $database, $password)
     {
         // checking password
         if (!password_verify($password, $database->getPassword())) {
-            throw new Exception("Invalid password");
+            throw new InvalidPasswordException("Invalid password");
         }
 
         // unlocking the database
@@ -213,12 +216,13 @@ class PassDatabaseUtil
      * @param QPassword $qpassword
      *
      * @return string
+     * @throws InvalidPasswordException
      */
     public function get_password(QDatabase $database, $password, QPassword $qpassword)
     {
         // checking password
         if (!password_verify($password, $database->getPassword())) {
-            throw new Exception("Invalid password");
+            throw new InvalidPasswordException("Invalid password");
         }
 
         // unlocking database
