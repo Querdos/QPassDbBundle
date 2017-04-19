@@ -15,10 +15,10 @@ matrix:
 
 before_script:
     - composer install
-    - composer require symfony/symfony:dev-master
     - composer require symfony/framework-bundle:dev-master
     - wget https://phar.phpunit.de/phpunit-${PHPUNIT_VERSION}.phar
     - chmod +x phpunit-${PHPUNIT_VERSION}.phar
 
 script:
-    - php phpunit-${PHPUNIT_VERSION}.phar -c app
+    - pwd
+    - php phpunit-${PHPUNIT_VERSION}.phar

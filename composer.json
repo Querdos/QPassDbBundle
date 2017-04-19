@@ -15,7 +15,8 @@
     "MIT"
   ],
   "require": {
-    "symfony/symfony": "^3.2"
+    "symfony/symfony": "dev-master",
+    "symfony/framework-bundle": "dev-master"
   },
   "autoload": {
     "psr-0": {
