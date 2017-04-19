@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <phpunit
-    bootstrap   = "./Tests/bootstrap.php"
+    bootstrap   = "Tests/bootstrap.php"
     backupGlobals = "false"
     backupStaticAttributes      = "false"
     convertErrorsToExceptions   = "true"
@@ -13,22 +13,13 @@
     colors                      = "true">
 
     <testsuites>
-        <directory suffix="Test.php">./Tests</directory>
+        <testsuite name="tests">
+            <file>./Tests/Util/PassDatabaseUtilTest.php</file>
+        </testsuite>
     </testsuites>
 
     <php>
-        <server name="KERNEL_DIR" value="./Tests/Fixtures/App/app"/>
+        <server name="KERNEL_DIR" value="Tests/Fixtures/App/app"/>
     </php>
-
-    <filter>
-        <whitelist>
-            <directory>./</directory>
-            <exclude>
-                <directory>./Resources</directory>
-                <directory>./Tests</directory>
-                <directory>./vendor</directory>
-            </exclude>
-        </whitelist>
-    </filter>
 
 </phpunit>
