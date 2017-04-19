@@ -6,13 +6,19 @@ class AppKernel extends Kernel
 {
     public function registerBundles()
     {
-        return [
+        $bundles = [
             new Symfony\Bundle\FrameworkBundle\FrameworkBundle(),
             new Symfony\Bundle\TwigBundle\TwigBundle(),
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
 
             new Querdos\QPassDbBundle\QPassDbBundle()
         ];
+
+        if (in_array($this->getEnvironment(), array('dev', 'test'))) {
+            $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
+        }
+
+        return $bundles;
     }
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
