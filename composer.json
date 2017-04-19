@@ -25,8 +25,5 @@
       "Querdos\\QPassDbBundle": ""
     }
   },
-  "target-dir": "Querdos/QPassDbBundle",
-  "repositories": [
-    {}
-  ]
+  "target-dir": "Querdos/QPassDbBundle"
 }
