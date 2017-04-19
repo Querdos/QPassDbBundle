@@ -15,7 +15,6 @@ matrix:
 
 before_script:
     - composer install
-    - composer require symfony/framework-bundle:dev-master
     - wget https://phar.phpunit.de/phpunit-${PHPUNIT_VERSION}.phar
     - chmod +x phpunit-${PHPUNIT_VERSION}.phar
 
