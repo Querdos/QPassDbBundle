@@ -8,6 +8,7 @@ framework:
     default_locale:     en
     translator:         { fallback: en }
     test:               ~
+    validation:         { enable_annotations: true }
     templating:
         engines: ['twig']
     session:
