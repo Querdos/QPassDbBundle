@@ -1,6 +1,6 @@
 language: php
 
-sudo: false
+sudo: true
 
 cache:
     directories:
@@ -9,16 +9,16 @@ cache:
 matrix:
     include:
         - php: 5.6
-          env: PHPUNIT_VERSION='^5.7'
+          env: PHPUNIT_VERSION='5.7'
         - php: 7.0
-          env: PHPUNIT_VERSION='^6.1'
+          env: PHPUNIT_VERSION='6.1'
 
 before_script:
-    - curl -s http://getcomposer.org/installer | php --
-    - php composer.phar install --dev
-    - php composer.phar require symfony/symfony:dev-master
-    - php composer.phar require symfony/framework-bundle:dev-master
-    - php composer.phar require phpunit/phpunit:${PHPUNIT_VERSION}
+    - composer install
+    - composer require symfony/symfony:dev-master
+    - composer require symfony/framework-bundle:dev-master
+    - wget https://phar.phpunit.de/phpunit-${PHPUNIT_VERSION}.phar
+    - chmod +x phpunit-${PHPUNIT_VERSION}.phar
 
 script:
-    - vendor/bin/phpunit
+    - php phpunit-${PHPUNIT_VERSION}.phar -c app
