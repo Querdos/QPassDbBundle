@@ -20,6 +20,6 @@ class QPasswordManager extends BaseManager
      */
     public function readByPassId($pass_id)
     {
-        return $this->repository->findByOneByPassId($pass_id);
+        return $this->repository->readByPassId($pass_id);
     }
 }
