@@ -19,5 +19,4 @@ before_script:
     - chmod +x phpunit-${PHPUNIT_VERSION}.phar
 
 script:
-    - pwd
     - php phpunit-${PHPUNIT_VERSION}.phar --verbose
