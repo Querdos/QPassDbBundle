@@ -14,7 +14,9 @@
 
     <testsuites>
         <testsuite name="tests">
-            <file>./Tests/Util/PassDatabaseUtilTest.php</file>
+            <file>Tests/Manager/QDatabaseManagerTest.php</file>
+            <file>Tests/Manager/QPasswordManagerTest.php</file>
+            <file>Tests/Util/PassDatabaseUtilTest.php</file>
         </testsuite>
     </testsuites>
 
