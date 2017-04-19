@@ -14,10 +14,6 @@ class AppKernel extends Kernel
             new Querdos\QPassDbBundle\QPassDbBundle()
         ];
 
-        if (in_array($this->getEnvironment(), array('dev', 'test'))) {
-            $bundles[] = new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle();
-        }
-
         return $bundles;
     }
     public function registerContainerConfiguration(LoaderInterface $loader)
