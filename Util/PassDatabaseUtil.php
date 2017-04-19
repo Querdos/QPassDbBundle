@@ -3,11 +3,14 @@
 namespace Querdos\QPassDbBundle\Util;
 use Querdos\QPassDbBundle\Entity\QDatabase;
 use Querdos\QPassDbBundle\Entity\QPassword;
+use Querdos\QPassDbBundle\Exception\ExistingDatabaseException;
+use Querdos\QPassDbBundle\Exception\InvalidPasswordException;
 use Querdos\QPassDbBundle\Manager\QDatabaseManager;
 use Querdos\QPassDbBundle\Manager\QPasswordManager;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\ProcessBuilder;
+use Symfony\Component\Routing\Exception\InvalidParameterException;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
@@ -42,6 +45,8 @@ class PassDatabaseUtil
      *
      * @param string $dbname
      * @param string $password
+     *
+     * @throws ExistingDatabaseException
      */
     public function create_database($dbname, $password)
     {
@@ -57,7 +62,7 @@ class PassDatabaseUtil
 
         // checking error
         if (0 != count($dbname_val)) {
-            throw new Exception((string) $dbname_val);
+            throw new InvalidParameterException((string) $dbname_val);
         }
 
         // password validation
@@ -72,7 +77,7 @@ class PassDatabaseUtil
 
         // checking error
         if (0 != count($pass_val)) {
-            throw new Exception((string) $dbname_val);
+            throw new InvalidParameterException((string) $dbname_val);
         }
 
         // checking if the database_dir exists and creating it if necessary
@@ -82,7 +87,7 @@ class PassDatabaseUtil
 
         // checking if database exists already or not
         if ($this->qdatabaseManager->readByDatabaseName($dbname) !== null) {
-            throw new Exception("Database exists");
+            throw new ExistingDatabaseException("Database exists");
         }
 
         // checking if the file doesn't exists
@@ -99,7 +104,7 @@ class PassDatabaseUtil
             );
         } else {
             // opening failed, raising exception
-            throw new Exception($error);
+            throw new \SQLiteException($error);
         }
 
         // encrypting the newly created database
@@ -116,12 +121,27 @@ class PassDatabaseUtil
      * @param string    $password
      * @param string    $pass_to_add
      * @param string    $label
+     *
+     * @return string
+     * @throws InvalidPasswordException
      */
     public function add_password(QDatabase $database, $password, $pass_to_add, $label)
     {
         // first of all, checking that the password match
         if (!password_verify($password, $database->getPassword())) {
-            throw new Exception("Password doesn't match");
+            throw new InvalidPasswordException("Password doesn't match");
+        }
+
+        // checking label
+        $label_er = $this->validator->validatePropertyValue(QPassword::class, 'label', $label);
+        if (0 != count($label_er)) {
+            throw new InvalidParameterException((string) $label_er);
+        }
+
+        // checking pass_to_add
+        $pass_er = $this->validator->validatePropertyValue(QPassword::class, 'password', $pass_to_add);
+        if (0 != count($pass_er)) {
+            throw new InvalidParameterException("Invalid password");
         }
 
         // unlocking database
@@ -136,7 +156,7 @@ class PassDatabaseUtil
             sqlite_query($db, SqlQueryUtil::insert_password($pass_to_add, $pass_id));
         } else {
             // error occured, raising exception
-            throw new Exception($error);
+            throw new \SQLiteException($error);
         }
 
         // insert finished, lock the plain database
@@ -144,6 +164,9 @@ class PassDatabaseUtil
 
         // adding entity
         $this->qpasswordManager->create(new QPassword($database, $label, $pass_id));
+
+        // returning the pass_id of the newly added password
+        return $pass_id;
     }
 
     /**
