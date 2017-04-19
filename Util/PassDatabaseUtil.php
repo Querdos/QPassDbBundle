@@ -75,6 +75,11 @@ class PassDatabaseUtil
             throw new Exception((string) $dbname_val);
         }
 
+        // checking if the database_dir exists and creating it if necessary
+        if (!is_dir($this->db_dir)) {
+            mkdir($this->db_dir, 0777, true);
+        }
+
         // checking if database exists already or not
         if ($this->qdatabaseManager->readByDatabaseName($dbname) !== null) {
             throw new Exception("Database exists");
