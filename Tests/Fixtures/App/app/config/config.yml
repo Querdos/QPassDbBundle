@@ -1,0 +1,30 @@
+# Symfony configuration
+framework:
+    secret:             Oh my god !
+    router:             { resource: "%kernel.root_dir%/config/routing.yml" }
+    form:               true
+    csrf_protection:    true
+    session:            ~
+    default_locale:     en
+    translator:         { fallback: en }
+    test:               ~
+    templating:
+        engines: ['twig']
+    session:
+        storage_id:     session.storage.mock_file
+    profiler:
+        collect: false
+
+# Doctrine Configuration
+doctrine:
+    dbal:
+        driver: "pdo_sqlite"
+        path:   "%kernel.cache_dir%/database.db3"
+
+    orm:
+        auto_generate_proxy_classes: "%kernel.debug%"
+        auto_mapping: true
+
+q_pass_db:
+    # Directory where databases will be stored
+    db_dir: web/database_storage
