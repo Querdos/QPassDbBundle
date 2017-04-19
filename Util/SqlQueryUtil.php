@@ -19,7 +19,7 @@ class SqlQueryUtil
     {
         return <<<EOT
 CREATE TABLE passwords (
-    id INTEGER AUTOINCREMENT PRIMARY KEY NOT NULL,
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     password VARCHAR(255) NOT NULL,
     pass_id VARCHAR(100) NOT NULL
 )
@@ -29,17 +29,14 @@ EOT;
     /**
      * Build the insert password sql request
      *
-     * @param string $password
-     * @param string $pass_id
-     *
      * @return string
      */
-    public static function insert_password($password, $pass_id)
+    public static function insert_password()
     {
         return <<<EOT
 INSERT INTO passwords 
       (password, pass_id) VALUES
-      ('{$password}', '{$pass_id}')
+      (:password, :pass_id)
 EOT;
     }
 
@@ -56,12 +53,12 @@ FROM passwords
 EOT;
     }
 
-    public static function select_password($pass_id)
+    public static function select_password()
     {
         return <<<EOT
-SELECT passwords.password as password, passwords.pass_id as pass_id
+SELECT passwords.password as password
 FROM passwords
-WHERE passwords.pass_id = '{$pass_id}'
+WHERE passwords.pass_id = :pass_id
 EOT;
     }
 }

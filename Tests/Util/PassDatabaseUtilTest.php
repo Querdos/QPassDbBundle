@@ -14,6 +14,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  * Class PassDatabaseUtilTest
  * @package Querdos\QPassDbBundle\Tests\Util
  * @author  Hamza ESSAYEGH <hamza.essayegh@protonmail.com>
+ *
+ * TODO: Exceptions testing
  */
 class PassDatabaseUtilTest extends KernelTestCase
 {
@@ -198,62 +200,6 @@ class PassDatabaseUtilTest extends KernelTestCase
     }
 
     /**
-     * @depends                  testAddPassword
-     *
-     * @expectedException        \Querdos\QPassDbBundle\Exception\InvalidPasswordException
-     * @expectedExceptionMessage Passwords doesn't match
-     */
-    public function testWrongPasswordForAddingPassword()
-    {
-        $db = $this->qdatabaseManager->readByDatabaseName('database_test_1');
-        $this->passDbUtil->add_password($db, 'wrongPasswordtest', uniqid(), 'label test wrong');
-    }
-
-    /**
-     * @depends testAddPassword
-     *
-     * @expectedException \Querdos\QPassDbBundle\Exception\InvalidParameterException
-     */
-    public function testBlankPasswordToAddForAddingPassword()
-    {
-        $db = $this->qdatabaseManager->readByDatabaseName('database_test_1');
-        $this->passDbUtil->add_password($db, 'database_test_1_password', '', 'label good');
-    }
-
-    /**
-     * @depends testAddPassword
-     *
-     * @expectedException \Querdos\QPassDbBundle\Exception\InvalidParameterException
-     */
-    public function testNullPasswordToAddForAddingPassword()
-    {
-        $db = $this->qdatabaseManager->readByDatabaseName('database_test_1');
-        $this->passDbUtil->add_password($db, 'database_test_1_password', null, 'label good');
-    }
-
-    /**
-     * @depends testAddPassword
-     *
-     * @expectedException \Querdos\QPassDbBundle\Exception\InvalidParameterException
-     */
-    public function testBlankLabelForAddingPassword()
-    {
-        $db = $this->qdatabaseManager->readByDatabaseName('database_test_1');
-        $this->passDbUtil->add_password($db, 'database_test_1_password', 'test', '');
-    }
-
-    /**
-     * @depends testAddPassword
-     *
-     * @expectedException \Querdos\QPassDbBundle\Exception\InvalidParameterException
-     */
-    public function testNullLabelForAddingPassword()
-    {
-        $db = $this->qdatabaseManager->readByDatabaseName('database_test_1');
-        $this->passDbUtil->add_password($db, 'database_test_1_password', 'test', null);
-    }
-
-    /**
      * @depends testAddPassword
      */
     public function testGetAllPassword()
@@ -272,25 +218,14 @@ class PassDatabaseUtilTest extends KernelTestCase
                 $pass_ids[$pass_expected] = $this->passDbUtil->add_password($db, $password, $pass_expected, "label test $i");
             }
 
-            // checking wrong password
-            $this->expectException(InvalidPasswordException::class);
-            $this->passDbUtil->get_all_password($db, 'testWrongPassword');
-
-            var_dump("test");
-            die;
-
             // retrieving all passwords
             $passwords = $this->passDbUtil->get_all_password($db, $password);
 
             // checking count
-            $this->assertEquals(6, count($passwords));
-            dump($passwords);
-            die;
+            $this->assertEquals(5, count($passwords));
 
             // checking each password
             foreach ($passwords as $p) {
-                var_dump($p);
-                die;
                 $this->assertNotNull($this->qpasswordManager->readByPassId($p['pass_id']));
             }
             $pass_ids = [];
@@ -314,6 +249,7 @@ class PassDatabaseUtilTest extends KernelTestCase
                 $qpass         = $this->qpasswordManager->readByPassId($pass_ids);
 
                 $pass_retrieved = $this->passDbUtil->get_password($db, $password, $qpass);
+
                 $this->assertEquals($pass_expected, $pass_retrieved);
             }
         }

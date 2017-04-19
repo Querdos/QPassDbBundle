@@ -1,6 +1,7 @@
 <?php
 
 namespace Querdos\QPassDbBundle\Util;
+use PDO;
 use Querdos\QPassDbBundle\Entity\QDatabase;
 use Querdos\QPassDbBundle\Entity\QPassword;
 use Querdos\QPassDbBundle\Exception\ExistingDatabaseException;
@@ -97,16 +98,16 @@ class PassDatabaseUtil
         }
 
         // opening sqlite database
-        if ($db = sqlite_open("{$this->db_dir}/{$dbname}.qdb", 0666, $error)) {
-            // creating main table
-            sqlite_query(
-                $db,
-                SqlQueryUtil::create_table()
-            );
-        } else {
-            // opening failed, raising exception
-            throw new \SQLiteException($error);
+        try {
+            $pdo = new PDO("sqlite:{$this->db_dir}/{$dbname}.qdb");
+            $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+        } catch (\SQLiteException $e) {
+            throw new Exception($e->getMessage());
         }
+
+        // creating the table
+        $pdo->query(SqlQueryUtil::create_table());
 
         // encrypting the newly created database
         $this->lock_database("{$this->db_dir}/{$dbname}.qdb", $dbname, $password);
@@ -153,13 +154,20 @@ class PassDatabaseUtil
         $pass_id = uniqid($database->getDbname() . '.');
 
         // opening it
-        if ($db = sqlite_open($file_db, 0666, $error)) {
-            // request for the insertion
-            sqlite_query($db, SqlQueryUtil::insert_password($pass_to_add, $pass_id));
-        } else {
-            // error occured, raising exception
-            throw new \SQLiteException($error);
+        try {
+            $pdo = new PDO("sqlite:{$file_db}");
+            $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (\SQLiteException $e) {
+            throw new Exception($e->getMessage());
         }
+
+        // adding the password
+        $statement = $pdo->prepare(SqlQueryUtil::insert_password());
+        $statement->execute(array(
+            'password' => $pass_to_add,
+            'pass_id'  => $pass_id
+        ));
 
         // insert finished, lock the plain database
         $this->lock_database($file_db, $database->getDbname(), $password);
@@ -192,20 +200,24 @@ class PassDatabaseUtil
         // unlocking the database
         $file_db = $this->unlock_database($database->getDbname(), $password);
 
-        // opening it with sqlite
-        if ($db = sqlite_open($file_db, 0666, $error)) {
-            // retrieving all passwords
-            $query          = sqlite_query($db, SqlQueryUtil::select_all_password());
-        } else {
-            // unable to open the database, raising error
-            throw new Exception($error);
+        // opening it
+        try {
+            $pdo = new PDO("sqlite:{$file_db}");
+            $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (\SQLiteException $e) {
+            throw new Exception($e->getMessage());
         }
+
+        // executing query
+        $statement = $pdo->prepare(SqlQueryUtil::select_all_password());
+        $statement->execute();
 
         // locking the database
         $this->lock_database($file_db, $database->getDbname(), $password);
 
         // returning data
-        return sqlite_fetch_all($query, SQLITE_ASSOC);
+        return $statement->fetchAll();
     }
 
     /**
@@ -229,19 +241,25 @@ class PassDatabaseUtil
         $file_db = $this->unlock_database($database->getDbname(), $password);
 
         // trying to open the database
-        if ($db = sqlite_open($file_db, 0666, $error)) {
-            // retrieving the password
-            $query = sqlite_query($db, SqlQueryUtil::select_password($qpassword->getPassId()));
-        } else {
-            // unable to open the database, raising error
-            throw new Exception($error);
+        try {
+            $pdo = new PDO("sqlite:{$file_db}");
+            $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (Exception $e) {
+            throw new Exception($e->getMessage());
         }
+
+        // querying the database
+        $statement = $pdo->prepare(SqlQueryUtil::select_password());
+        $statement->execute(array(
+            'pass_id' => $qpassword->getPassId()
+        ));
 
         // locking the database
         $this->lock_database($file_db, $database->getDbname(), $password);
 
         // returning the result
-        return sqlite_fetch_single($query);
+        return $statement->fetchColumn();
     }
 
     /**
