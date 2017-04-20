@@ -263,6 +263,42 @@ class PassDatabaseUtil
     }
 
     /**
+     * @param QDatabase $database
+     * @param string    $password
+     * @param string    $pass_id
+     *
+     * @throws InvalidPasswordException
+     */
+    public function remove_password(QDatabase $database, $password, $pass_id)
+    {
+        // checking password
+        if (!password_verify($pass_id, $database->getPassword())) {
+            throw new InvalidPasswordException("Invalid password");
+        }
+
+        // unlocking the database
+        $file_db = $this->unlock_database($database->getDbname(), $password);
+
+        // trying to open it
+        try {
+            $pdo = new PDO("sqlite:{$file_db}");
+            $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (\Exception $e) {
+            throw new \SQLiteException($e->getMessage());
+        }
+
+        // removing the password
+        $statement = $pdo->prepare(SqlQueryUtil::remove_password());
+        $statement->execute(array(
+            'pass_id' => $pass_id
+        ));
+
+        // locking the database
+        $this->lock_database($file_db, $database->getDbname(), $password);
+    }
+
+    /**
      * Lock a given database with the given password
      *
      * @param $file

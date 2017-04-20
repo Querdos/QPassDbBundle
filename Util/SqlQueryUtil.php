@@ -53,6 +53,11 @@ FROM passwords
 EOT;
     }
 
+    /**
+     * Build the select password sql query
+     *
+     * @return string
+     */
     public static function select_password()
     {
         return <<<EOT
@@ -60,5 +65,14 @@ SELECT passwords.password as password
 FROM passwords
 WHERE passwords.pass_id = :pass_id
 EOT;
+    }
+
+    public static function remove_password()
+    {
+        return <<<EOT
+DELETE FROM passwords
+WHERE passwords.pass_id = :pass_id
+EOT;
+
     }
 }
