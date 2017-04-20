@@ -23,7 +23,8 @@
     "doctrine/doctrine-bundle":             "^1.6",
     "doctrine/doctrine-cache-bundle":       "^1.2",
     "doctrine/doctrine-migrations-bundle":  "^1.0",
-    "doctrine/dbal":                        "^2.5"
+    "doctrine/dbal":                        "^2.5",
+    "phpunit/php-code-coverage": "^4.0"
   },
   "require-dev": {
     "symfony/phpunit-bridge":               "^3.0",

@@ -8,6 +8,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Class QDatabase
  * @package Querdos\QPassDbBundle\Entity
  * @author  Hamza ESSAYEGH <hamza.essayegh@protonmail.com>
+ *
+ * TODO: Add a getPasswods method
  */
 class QDatabase
 {
