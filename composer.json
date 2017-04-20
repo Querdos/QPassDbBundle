@@ -31,9 +31,6 @@
     "fzaninotto/faker": "^1.6"
   },
   "autoload": {
-    "psr-0": {
-      "Querdos\\QPassDbBundle": ""
-    }
-  },
-  "target-dir": "Querdos/QPassDbBundle"
+    "psr-4": { "Querdos\\QPassDbBundle\\": "" }
+  }
 }
