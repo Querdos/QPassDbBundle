@@ -35,5 +35,5 @@
       "Querdos\\QPassDbBundle": ""
     }
   },
-  "target-dir": "Querdos/QPassDbBundle"
+  "target-dir": "qpass-db-bundle"
 }
