@@ -34,5 +34,6 @@
     "psr-0": {
       "Querdos\\QPassDbBundle": ""
     }
-  }
+  },
+  "target-dir": "Querdos/QPassDbBundle"
 }
