@@ -69,6 +69,17 @@ For now, only one engine is supported:
   * [ORM](http://www.doctrine-project.org/projects/orm.html)
   
 More support will come as soon as possible.  
+
+First of all, update your database schema:
+```bash
+$ bin/console doctrine:schema:update --force
+```
+
+Or if you use the `DoctrineMigrationBundle`, run the following commands:
+```bash
+$ bin/console doctrine:migration:diff && bin/console doctrine:migration:migrate
+```
+
 You can now setup your configuration file and specify these following options:
 
 ```yaml
