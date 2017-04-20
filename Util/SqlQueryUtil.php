@@ -67,12 +67,25 @@ WHERE passwords.pass_id = :pass_id
 EOT;
     }
 
+    /**
+     * Build the query for the password removal
+     *
+     * @return string
+     */
     public static function remove_password()
     {
         return <<<EOT
 DELETE FROM passwords
 WHERE passwords.pass_id = :pass_id
 EOT;
+    }
 
+    public static function edit_password()
+    {
+        return <<<EOT
+UPDATE passwords
+SET password = :new_password
+WHERE pass_id = :pass_id
+EOT;
     }
 }

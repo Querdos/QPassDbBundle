@@ -263,6 +263,8 @@ class PassDatabaseUtil
     }
 
     /**
+     * Remove a given QPassword from the database
+     *
      * @param QDatabase $database
      * @param string    $password
      * @param QPassword $qpassword
@@ -299,6 +301,66 @@ class PassDatabaseUtil
 
         // removing the qpassword from the database
         $this->qpasswordManager->delete($qpassword);
+    }
+
+    /**
+     * Remove a given database and its associated qpassword
+     *
+     * @param QDatabase $database
+     * @param string    $password
+     *
+     * @throws InvalidPasswordException
+     */
+    public function remove_database(QDatabase $database, $password)
+    {
+        // checking password
+        if (!password_verify($password, $database->getPassword())) {
+            throw new InvalidPasswordException("Invalid password");
+        }
+
+        // removing the file
+        unlink("{$this->db_dir}/{$database->getDbname()}.qdb.enc");
+
+        // removing entity
+        $this->qdatabaseManager->delete($database);
+    }
+
+    /**
+     * @param QDatabase $database
+     * @param string    $password
+     * @param QPassword $qpassword
+     * @param string    $newPassword
+     *
+     * @throws InvalidPasswordException
+     */
+    public function edit_password(QDatabase $database, $password, QPassword $qpassword, $newPassword)
+    {
+        // checking password
+        if (!password_verify($password, $database->getPassword())) {
+            throw new InvalidPasswordException("Invalid password");
+        }
+
+        // opening database
+        $file_db = $this->unlock_database($database->getDbname(), $password);
+
+        // trying to open it
+        try {
+            $pdo = new PDO("sqlite:{$file_db}");
+            $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        } catch (\Exception $e) {
+            throw new \SQLiteException($e->getMessage());
+        }
+
+        // editing password
+        $statement = $pdo->prepare(SqlQueryUtil::edit_password());
+        $statement->execute(array(
+            'new_password' => $newPassword,
+            'pass_id'     => $qpassword->getPassId()
+        ));
+
+        // locking the database
+        $this->lock_database($file_db, $database->getDbname(), $password);
     }
 
     /**

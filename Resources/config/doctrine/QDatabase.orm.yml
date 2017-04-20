@@ -20,3 +20,11 @@ Querdos\QPassDbBundle\Entity\QDatabase:
             type:         text
             nullable:     false
             unique:       false
+
+    oneToMany:
+        qpasswords:
+            targetEntity: Querdos\QPassDbBundle\Entity\QPassword
+            mappedBy:     qdatabase
+            cascade:      [ 'remove' ]
+            joinColumn:
+                nullable: true
