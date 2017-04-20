@@ -23,8 +23,10 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
 
-            ->scalarNode('db_dir')
-            ->defaultValue('~/.qmessaging_storage')
+                ->scalarNode('db_dir')
+                ->defaultValue('~/.qmessaging_storage')
+                ->end()
+            
             ->end()
         ;
 
