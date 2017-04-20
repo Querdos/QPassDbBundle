@@ -265,14 +265,14 @@ class PassDatabaseUtil
     /**
      * @param QDatabase $database
      * @param string    $password
-     * @param string    $pass_id
+     * @param QPassword $qpassword
      *
      * @throws InvalidPasswordException
      */
-    public function remove_password(QDatabase $database, $password, $pass_id)
+    public function remove_password(QDatabase $database, $password, QPassword $qpassword)
     {
         // checking password
-        if (!password_verify($pass_id, $database->getPassword())) {
+        if (!password_verify($password, $database->getPassword())) {
             throw new InvalidPasswordException("Invalid password");
         }
 
@@ -291,11 +291,14 @@ class PassDatabaseUtil
         // removing the password
         $statement = $pdo->prepare(SqlQueryUtil::remove_password());
         $statement->execute(array(
-            'pass_id' => $pass_id
+            'pass_id' => $qpassword->getPassId()
         ));
 
         // locking the database
         $this->lock_database($file_db, $database->getDbname(), $password);
+
+        // removing the qpassword from the database
+        $this->qpasswordManager->delete($qpassword);
     }
 
     /**
