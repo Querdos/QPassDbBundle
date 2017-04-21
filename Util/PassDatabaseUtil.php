@@ -130,9 +130,10 @@ class PassDatabaseUtil
      * @param string    $pass_to_add
      * @param string    $label
      *
-     * @return string
      * @throws InvalidParameterException
      * @throws InvalidPasswordException
+     *
+     * @return QPassword
      */
     public function add_password(QDatabase $database, $password, $pass_to_add, $label)
     {
@@ -179,10 +180,11 @@ class PassDatabaseUtil
         $this->lock_database($file_db, $database->getDbname(), $password);
 
         // adding entity
-        $this->qpasswordManager->create(new QPassword($database, $label, $pass_id));
+        $qpassword = new QPassword($database, $label, $password);
+        $this->qpasswordManager->create($qpassword);
 
-        // returning the pass_id of the newly added password
-        return $pass_id;
+        // returning the newly created qpassword
+        return $qpassword;
     }
 
     /**

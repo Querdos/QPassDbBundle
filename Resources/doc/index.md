@@ -97,7 +97,9 @@ $qdatabase  = $container->get('qpdb.manager.qdatabase')->readByDatabaseName($db_
 
 The manager will return a null value if no database is found.
 
-## Add a password to the existing dataabase
+## Add a password to the existing database
+To do so, you can call the `add_password` method from the main service by specifying a `QDatabase`, its associated
+password, the password to add and finally a label:
 ```php
 <?php
 // your logic
@@ -109,7 +111,7 @@ $container = ...;
 $qdatabase = $container->get('qpdb.manager.qdatabase')->readByDatabaseName($db_name);
 
 // add a new password
-$pass_id = $container->get('qpdb.util.pass_db')->add_password($qdatabase, $password, $pass_to_add, $label);
+$qpassword = $container->get('qpdb.util.pass_db')->add_password($qdatabase, $password, $pass_to_add, $label);
 ```
 
 ## Retrieve a password from the database
