@@ -1,5 +1,10 @@
 # QPassDbBundle
-[![Build Status](https://travis-ci.org/Querdos/QPassDbBundle.svg?branch=master)](https://travis-ci.org/Querdos/QPassDbBundle)  
+
+[![Build Status](https://travis-ci.org/Querdos/QPassDbBundle.svg?branch=master)](https://travis-ci.org/Querdos/QPassDbBundle) 
+[![Latest Stable Version](https://poser.pugx.org/querdos/qpass-db-bundle/v/stable)](https://packagist.org/packages/querdos/qpass-db-bundle) 
+[![Total Downloads](https://poser.pugx.org/querdos/qpass-db-bundle/downloads)](https://packagist.org/packages/querdos/qpass-db-bundle)
+[![Latest Unstable Version](https://poser.pugx.org/querdos/qpass-db-bundle/v/unstable)](https://packagist.org/packages/querdos/qpass-db-bundle)
+[![License](https://poser.pugx.org/querdos/qpass-db-bundle/license)](https://packagist.org/packages/querdos/qpass-db-bundle)  
 
 A symfony bundle that allow you to create local encrypted database for passwords storage
 
