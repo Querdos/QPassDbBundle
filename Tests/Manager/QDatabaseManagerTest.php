@@ -73,8 +73,12 @@ class QDatabaseManagerTest extends KernelTestCase
 
         // asserting not null
         $this->assertNotNull($result);
+
         // asserting that the retrieved password isn't plain
         $this->assertNotEquals($db_pass, $result->getPassword());
+
+        // asserting that the hash is correct
+        $this->assertTrue(password_verify($db_pass, $result->getPassword()));
     }
 
     protected function tearDown()
