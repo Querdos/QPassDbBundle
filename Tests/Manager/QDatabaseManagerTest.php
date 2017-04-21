@@ -84,7 +84,7 @@ class QDatabaseManagerTest extends KernelTestCase
     /**
      * @depends testCreateQDatabase
      */
-    public function testUpdateDatabaseInformation()
+    public function testUpdateQDatabaseInformation()
     {
         // creating a new entity and persisting it
         $db_name        = "database_test";
@@ -132,6 +132,39 @@ class QDatabaseManagerTest extends KernelTestCase
         // checking password
         $this->assertTrue(password_verify($db_pass_update, $result->getPassword()));
         $this->assertFalse(password_verify($db_pass, $result->getPassword()));
+    }
+
+    /**
+     * @depends testCreateQDatabase
+     */
+    public function testRemoveQDatabase()
+    {
+        // creating new entity
+        $db_name   = 'database_name_test';
+        $db_pass   = 'database_name_test_pass';
+        $qdatabase = new QDatabase($db_name, $db_pass);
+
+        // persisting
+        $this->qdatabaseManager->create($qdatabase);
+
+        // removing
+        $this->qdatabaseManager->delete($qdatabase);
+
+        // checking with entity manager
+        $result = $this->entityManager
+            ->createQueryBuilder()
+
+            ->select('qdatabase')
+            ->from('QPassDbBundle:QDatabase', 'qdatabase')
+
+            ->where('qdatabase.dbname = :db_name')
+            ->setParameter('db_name', $qdatabase->getDbname())
+
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        // checking that result is null
+        $this->assertNull($result);
     }
 
     protected function tearDown()

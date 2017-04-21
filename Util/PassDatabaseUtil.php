@@ -271,6 +271,31 @@ class PassDatabaseUtil
     }
 
     /**
+     * Change the password for the given database
+     *
+     * @param QDatabase $database
+     * @param string $password
+     * @param string $newPassword
+     *
+     * @throws InvalidPasswordException
+     */
+    public function edit_database_password(QDatabase $database, $password, $newPassword)
+    {
+        // checking password
+        if (!password_verify($password, $database->getPassword())) {
+            throw new InvalidPasswordException("Invalid password");
+        }
+
+        // unlocking the database and locking it with new password
+        $file_db = $this->unlock_database($database->getDbname(), $password);
+        $this->lock_database($file_db, $database->getDbname(), $newPassword);
+
+        // changing password in database
+        $database->setPlainPassword($newPassword);
+        $this->qdatabaseManager->update($database);
+    }
+
+    /**
      * Remove a given QPassword from the database
      *
      * @param QDatabase $database
