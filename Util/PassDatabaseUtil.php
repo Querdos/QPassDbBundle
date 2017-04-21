@@ -180,7 +180,7 @@ class PassDatabaseUtil
         $this->lock_database($file_db, $database->getDbname(), $password);
 
         // adding entity
-        $qpassword = new QPassword($database, $label, $password);
+        $qpassword = new QPassword($database, $label, $pass_id);
         $this->qpasswordManager->create($qpassword);
 
         // returning the newly created qpassword
