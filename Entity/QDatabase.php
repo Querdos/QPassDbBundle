@@ -28,6 +28,11 @@ class QDatabase
     private $dbname;
 
     /**
+     * @var string
+     */
+    private $plainPassword;
+
+    /**
      * The password for the database
      *
      * @var string
@@ -53,8 +58,8 @@ class QDatabase
      */
     public function __construct($dbname = null, $password = null)
     {
-        $this->dbname   = $dbname;
-        $this->password = $password;
+        $this->dbname        = $dbname;
+        $this->plainPassword = $password;
     }
 
     /**
@@ -130,6 +135,25 @@ class QDatabase
     public function setQpasswords($qpasswords)
     {
         $this->qpasswords = $qpasswords;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPlainPassword()
+    {
+        return $this->plainPassword;
+    }
+
+    /**
+     * @param string $plainPassword
+     *
+     * @return QDatabase
+     */
+    public function setPlainPassword($plainPassword)
+    {
+        $this->plainPassword = $plainPassword;
         return $this;
     }
 }

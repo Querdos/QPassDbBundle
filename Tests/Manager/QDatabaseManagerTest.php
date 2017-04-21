@@ -81,6 +81,59 @@ class QDatabaseManagerTest extends KernelTestCase
         $this->assertTrue(password_verify($db_pass, $result->getPassword()));
     }
 
+    /**
+     * @depends testCreateQDatabase
+     */
+    public function testUpdateDatabaseInformation()
+    {
+        // creating a new entity and persisting it
+        $db_name        = "database_test";
+        $db_pass        = "database_test_password";
+        $db_name_update = "database_test_update";
+        $db_pass_update = "database_test_password_update";
+
+        $qdatabase = new QDatabase($db_name, $db_pass);
+        $this->qdatabaseManager->create($qdatabase);
+
+        // changing database name
+        $qdatabase->setDbname($db_name_update);
+        $this->qdatabaseManager->update($qdatabase);
+
+        // checking in database
+        $query = $this->entityManager
+            ->createQueryBuilder()
+            ->select('qdatabase')
+
+            ->from('QPassDbBundle:QDatabase', 'qdatabase')
+            ->where('qdatabase.dbname = :db_name')
+            ->setParameter('db_name', $db_name_update)
+
+            ->getQuery()
+        ;
+        $result = $query->getOneOrNullResult();
+
+        // asserting not null
+        $this->assertNotNull($result);
+
+        // asserting that the retrieved password is still the same
+        $this->assertTrue(password_verify($db_pass, $result->getPassword()));
+
+        // now changing the password
+        $qdatabase->setPlainPassword($db_pass_update);
+        $this->qdatabaseManager->update($qdatabase);
+        $result = $query->getOneOrNullResult();
+
+        // asserting not null
+        $this->assertNotNull($result);
+
+        // checking database name
+        $this->assertEquals($db_name_update, $result->getDbname());
+
+        // checking password
+        $this->assertTrue(password_verify($db_pass_update, $result->getPassword()));
+        $this->assertFalse(password_verify($db_pass, $result->getPassword()));
+    }
+
     protected function tearDown()
     {
         parent::tearDown();

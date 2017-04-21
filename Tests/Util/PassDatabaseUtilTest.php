@@ -2,8 +2,12 @@
 
 namespace Querdos\QPassDbBundle\Tests\Util;
 
+use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\Tools\SchemaTool;
+use Querdos\QPassDbBundle\Entity\QDatabase;
+use Querdos\QPassDbBundle\Entity\QPassword;
 use Querdos\QPassDbBundle\Exception\InvalidPasswordException;
 use Querdos\QPassDbBundle\Manager\QDatabaseManager;
 use Querdos\QPassDbBundle\Manager\QPasswordManager;
@@ -92,10 +96,13 @@ class PassDatabaseUtilTest extends KernelTestCase
             $tool->dropSchema($metadata);
             $tool->createSchema($metadata);
         }
+
     }
 
     public function testCreateDatabase()
     {
+        set_error_handler(array(&$this, 'handleGeoError'));
+
         // launching the process
         foreach ($this->input_global as $dbname => $password) {
             $this->passDbUtil->create_database($dbname, $password);
@@ -129,20 +136,20 @@ class PassDatabaseUtilTest extends KernelTestCase
             $this->assertNotNull($db);
 
             // adding 5 passwords
-            $pass_id = $this->passDbUtil->add_password($db, $password, uniqid(), 'label test 1');
-            $this->assertNotNull($this->qpasswordManager->readByPassId($pass_id));
+            $qpassword = $this->passDbUtil->add_password($db, $password, uniqid(), 'label test 1');
+            $this->assertNotNull($this->qpasswordManager->readByPassId($qpassword->getPassId()));
 
-            $pass_id = $this->passDbUtil->add_password($db, $password, uniqid(), 'label test 2');
-            $this->assertNotNull($this->qpasswordManager->readByPassId($pass_id));
+            $qpassword = $this->passDbUtil->add_password($db, $password, uniqid(), 'label test 2');
+            $this->assertNotNull($this->qpasswordManager->readByPassId($qpassword->getPassId()));
 
-            $pass_id = $this->passDbUtil->add_password($db, $password, uniqid(), 'label test 3');
-            $this->assertNotNull($this->qpasswordManager->readByPassId($pass_id));
+            $qpassword = $this->passDbUtil->add_password($db, $password, uniqid(), 'label test 3');
+            $this->assertNotNull($this->qpasswordManager->readByPassId($qpassword->getPassId()));
 
-            $pass_id = $this->passDbUtil->add_password($db, $password, uniqid(), 'label test 4');
-            $this->assertNotNull($this->qpasswordManager->readByPassId($pass_id));
+            $qpassword = $this->passDbUtil->add_password($db, $password, uniqid(), 'label test 4');
+            $this->assertNotNull($this->qpasswordManager->readByPassId($qpassword->getPassId()));
 
-            $pass_id = $this->passDbUtil->add_password($db, $password, uniqid(), 'label test 5');
-            $this->assertNotNull($this->qpasswordManager->readByPassId($pass_id));
+            $qpassword = $this->passDbUtil->add_password($db, $password, uniqid(), 'label test 5');
+            $this->assertNotNull($this->qpasswordManager->readByPassId($qpassword->getPassId()));
         }
     }
 
@@ -151,6 +158,7 @@ class PassDatabaseUtilTest extends KernelTestCase
      */
     public function testGetAllPassword()
     {
+
         $pass_ids = [];
 
         // foreach input global

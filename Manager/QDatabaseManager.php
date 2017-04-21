@@ -18,10 +18,29 @@ class QDatabaseManager extends BaseManager
     {
         // hashing password
         $qdatabase->setPassword(
-            password_hash($qdatabase->getPassword(), PASSWORD_BCRYPT)
+            password_hash($qdatabase->getPlainPassword(), PASSWORD_BCRYPT)
         );
 
+        // setting the plain password to null
+        $qdatabase->setPlainPassword(null);
+
         parent::create($qdatabase);
+    }
+
+    /**
+     * @param QDatabase $qdatabase
+     */
+    public function update($qdatabase)
+    {
+        // checking if a plain password has been specified
+        if ($qdatabase->getPlainPassword() !== null) {
+            // in this case, changing the actual password
+            $qdatabase->setPassword(
+                password_hash($qdatabase->getPlainPassword(), PASSWORD_BCRYPT)
+            );
+        }
+
+        parent::update($qdatabase);
     }
 
     /**
