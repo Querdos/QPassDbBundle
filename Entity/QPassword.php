@@ -12,11 +12,15 @@ use Symfony\Component\Validator\Constraints as Assert;
 class QPassword
 {
     /**
+     * QPassword id
+     *
      * @var int
      */
     private $id;
 
     /**
+     * The associated QDatabase
+     *
      * @var QDatabase
      * @Assert\NotNull(
      *     message="QDatabase cannot be null"
@@ -25,6 +29,8 @@ class QPassword
     private $qdatabase;
 
     /**
+     * A label for the QPassword, must be representative
+     *
      * @var string
      * @Assert\NotBlank(
      *     message="Label cannot be blank"
@@ -33,6 +39,8 @@ class QPassword
     private $label;
 
     /**
+     * An id for the QPassword, in order to retrieve the password value in the database
+     *
      * @var string
      * @Assert\NotBlank(
      *     message="Pass id cannot be blank"

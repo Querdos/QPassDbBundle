@@ -6,12 +6,17 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class QDatabase
+ *
+ * Represent the encrypted database
+ *
  * @package Querdos\QPassDbBundle\Entity
  * @author  Hamza ESSAYEGH <hamza.essayegh@protonmail.com>
  */
 class QDatabase
 {
     /**
+     * QDatabase id
+     *
      * @var int
      */
     private $id;
@@ -28,12 +33,15 @@ class QDatabase
     private $dbname;
 
     /**
+     * The plain password, used to create or update a password
+     *
      * @var string
      */
     private $plainPassword;
 
     /**
-     * The password for the database
+     * The password for the database.
+     * Will be set only if the plainPassword is not null.
      *
      * @var string
      *
@@ -60,9 +68,12 @@ class QDatabase
     {
         $this->dbname        = $dbname;
         $this->plainPassword = $password;
+        $this->qpasswords    = array();
     }
 
     /**
+     * Return the id
+     *
      * @return int
      */
     public function getId()
@@ -71,6 +82,8 @@ class QDatabase
     }
 
     /**
+     * Set the id
+     *
      * @param int $id
      *
      * @return QDatabase
@@ -82,6 +95,8 @@ class QDatabase
     }
 
     /**
+     * Return the database name
+     *
      * @return string
      */
     public function getDbname()
@@ -90,6 +105,8 @@ class QDatabase
     }
 
     /**
+     * Set the database name
+     *
      * @param string $dbname
      *
      * @return QDatabase
@@ -101,6 +118,8 @@ class QDatabase
     }
 
     /**
+     * Return the real password of the database
+     *
      * @return string
      */
     public function getPassword()
@@ -109,6 +128,8 @@ class QDatabase
     }
 
     /**
+     * Set the password for the database
+     *
      * @param string $password
      *
      * @return QDatabase
@@ -120,6 +141,8 @@ class QDatabase
     }
 
     /**
+     * Return the list of associated passwords
+     *
      * @return QPassword[]
      */
     public function getQpasswords()
@@ -128,6 +151,8 @@ class QDatabase
     }
 
     /**
+     * Set the list of passwords
+     *
      * @param QPassword[] $qpasswords
      *
      * @return QDatabase
@@ -139,6 +164,8 @@ class QDatabase
     }
 
     /**
+     * Return the plain password
+     *
      * @return string
      */
     public function getPlainPassword()
@@ -147,6 +174,8 @@ class QDatabase
     }
 
     /**
+     * Set the plain password
+     *
      * @param string $plainPassword
      *
      * @return QDatabase
