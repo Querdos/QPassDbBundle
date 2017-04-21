@@ -24,8 +24,4 @@
         <server name="KERNEL_DIR" value="Tests/Fixtures/App/app"/>
     </php>
 
-    <listeners>
-        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
-    </listeners>
-
 </phpunit>
