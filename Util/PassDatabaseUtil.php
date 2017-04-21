@@ -49,6 +49,8 @@ class PassDatabaseUtil
      *
      * @throws ExistingDatabaseException
      * @throws InvalidParameterException
+     *
+     * @return QDatabase
      */
     public function create_database($dbname, $password)
     {
@@ -113,7 +115,11 @@ class PassDatabaseUtil
         $this->lock_database("{$this->db_dir}/{$dbname}.qdb", $dbname, $password);
 
         // persisting a new object
-        $this->qdatabaseManager->create(new QDatabase($dbname, $password));
+        $qdatabase = new QDatabase($dbname, $password);
+        $this->qdatabaseManager->create($qdatabase);
+
+        // returning the newly created database
+        return $qdatabase;
     }
 
     /**
