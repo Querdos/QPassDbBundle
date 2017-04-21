@@ -115,60 +115,6 @@ class PassDatabaseUtilTest extends KernelTestCase
     }
 
     /**
-     * @depends                  testCreateDatabase
-     *
-     * @expectedException        \Querdos\QPassDbBundle\Exception\InvalidParameterException
-     * @expectedExceptionMessage Database name cannot be blank
-     */
-    public function testNullDbnameForDatabaseCreation()
-    {
-        $this->passDbUtil->create_database(null, 'azerty');
-    }
-
-    /**
-     * @depends                  testCreateDatabase
-     *
-     * @expectedException        \Querdos\QPassDbBundle\Exception\InvalidParameterException
-     * @expectedExceptionMessage Database name cannot be blank
-     */
-    public function testBlankDbnameForDatabaseCreation()
-    {
-        $this->passDbUtil->create_database('', 'azerty');
-    }
-
-    /**
-     * @depends testCreateDatabase
-     *
-     * @expectedException        \Querdos\QPassDbBundle\Exception\InvalidParameterException
-     */
-    public function testNullPasswordForDatabaseCreation()
-    {
-        $this->passDbUtil->create_database('querdos', null);
-    }
-
-    /**
-     * @depends testCreateDatabase
-     *
-     * @expectedException        \Querdos\QPassDbBundle\Exception\InvalidParameterException
-     */
-    public function testBlankPasswordForDatabaseCreation()
-    {
-        $this->passDbUtil->create_database('querdos', '');
-    }
-
-    /**
-     * @depends                  testCreateDatabase
-     *
-     * @expectedException        \Querdos\QPassDbBundle\Exception\ExistingDatabaseException
-     * @expectedExceptionMessage Database exists
-     */
-    public function testExistingDatabaseForCreation()
-    {
-        $this->passDbUtil->create_database('querdos', 'testpass');
-        $this->passDbUtil->create_database('querdos', 'testpass'); // fail
-    }
-
-    /**
      * @depends testCreateDatabase
      */
     public function testAddPassword()
@@ -230,6 +176,36 @@ class PassDatabaseUtilTest extends KernelTestCase
                 $this->assertNotNull($this->qpasswordManager->readByPassId($p['pass_id']));
             }
             $pass_ids = [];
+        }
+    }
+
+    /**
+     * @depends testGetAllPassword
+     */
+    public function testRemovePassword()
+    {
+        $pass_ids = [];
+
+        // foreach input global
+        foreach ($this->input_global as $dbname => $password) {
+            // creating the database
+            $this->passDbUtil->create_database($dbname, $password);
+            $db = $this->qdatabaseManager->readByDatabaseName($dbname);
+
+            // adding 5 passwords by database
+            for ($i = 1; $i <= 5; $i++) {
+                $pass_ids[] = $this->passDbUtil->add_password($db, $password, $pass_ids, "label $i");
+            }
+
+            // removing passwords one by one and checking
+            $count = 5;
+            foreach ($pass_ids as $id) {
+                $qpassword = $this->qpasswordManager->readByPassId($id);
+                $this->passDbUtil->remove_password($db, $password, $qpassword);
+
+                // checking the count
+                $this->assertEquals(--$count, count($this->passDbUtil->get_all_password($db, $password)));
+            }
         }
     }
 

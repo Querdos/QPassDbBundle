@@ -6,7 +6,7 @@ Open a command console, enter your project directory and execute the
 following command to download the latest stable version of this bundle:
 
 ```console
-$ composer require querdos/qpass-db-bundle
+$ composer require querdos/qpass-db-bundle "^1.0"
 ```
 
 This command requires you to have Composer installed globally, as explained
@@ -43,7 +43,7 @@ class AppKernel extends Kernel
 # Initial configuration
 For now, only one engine is supported:
   * [ORM](http://www.doctrine-project.org/projects/orm.html)
-  
+
 More support will come as soon as possible.  
 
 First of all, update your database schema:
@@ -88,6 +88,8 @@ You can use the QDatabaseManager service `qpdb.manager.qdatabase` to search an e
 // retrieve the container
 $container  = ...;
 $db_name    = 'db_name_test';
+
+// retrieve a database
 $qdatabase  = $container->get('qpdb.manager.qdatabase')->readByDatabaseName($db_name);
 ```
 
@@ -100,6 +102,8 @@ The manager will return a null value if no database is found.
 
 // retrieve the container
 $container = ...;
+
+// retrieve a database
 $qdatabase = $container->get('qpdb.manager.qdatabase')->readByDatabaseName($db_name);
 
 // add a new password
@@ -114,7 +118,10 @@ You will need a `pass_id` in order to retrieve a password. To do so:
 
 // retrieve the container
 $container = ...;
+
+// retrieve a database
 $qdatabase = $container->get('qpdb.manager.qdatabase')->readByDatabaseName($db_name);
+
 // If no QPassword match, the manager will return a null value
 $qpassword = $container->get('qpdb.manager.qpassword')->readByPassId($pass_id);
 
@@ -130,6 +137,8 @@ You can use the main service in order to perform this operation:
 
 // retrieve the container
 $container = ...;
+
+// retrieve a database
 $qdatabase = $container->get('qpdb.manager.qdatabase')->readByDatabaseName($db_name);
 
 // retrieve all passwords
@@ -140,6 +149,38 @@ $passwords = $container->get('qpdb.util.pass_db')->get_all_password($qdatabase, 
  * array => [
  *      'pass_id_1' => 'password_1',
  *      'pass_id_2' => 'password_2'
- * ] 
+ * ]
  */
 ```
+
+## Remove a password from a given database
+```php
+<?php
+// your logic
+
+// retrieve the container
+$container = ...;
+
+// retrieve a database
+$qdatabase = $container->get('qpdb.manager.qdatabase')->readByDatabaseName($db_name);
+
+// retrieve a password
+$qpassword = $container->get('qpdb.manager.qpassword')->readByPassId($pass_id);
+
+// finally remove it
+$container->get('qpdb.util.pass_db')->remove_password($qdatabase, $password, $qpassword);
+```
+
+## Remove a database
+```php
+<?php
+// your logic
+
+// retrieve the container
+$container = ...;
+
+// retrieve a database
+$qdatabase = $container->get('qpdb.manager.qdatabase')->readByDatabaseName($db_name);
+
+// finally remove it
+$container->get('qpdb.util.pass_db')->remove_database($qdatabase, $password);
