@@ -25,5 +25,3 @@ The logic in it is simple:
 ## Documentation
 For usage documentation, please see:
 [Resources/doc/index.md](Resources/doc/index.md)
-
-## Usage

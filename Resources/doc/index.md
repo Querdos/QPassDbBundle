@@ -76,11 +76,13 @@ You can use the main service `qpdb.util.pass_db` to create a database:
 
 // retrieve the container
 $container = ...;
-$container->get('qpdb.util.pass_db')->create_database($db_name, $password);
+
+// create and retrieve the database informations
+$qdatabase = $container->get('qpdb.util.pass_db')->create_database($db_name, $password);
 ```
 
-## Retrieve an existing database
-You can use the QDatabaseManager service `qpdb.manager.qdatabase` to search an existing database:
+## Retrieve an existing database by its name
+You can use the `QDatabaseManager` service (`qpdb.manager.qdatabase`) to search an existing database:
 ```php
 <?php
 // your logic
