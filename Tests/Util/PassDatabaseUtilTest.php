@@ -96,29 +96,66 @@ class PassDatabaseUtilTest extends KernelTestCase
             $tool->dropSchema($metadata);
             $tool->createSchema($metadata);
         }
-
     }
 
     public function testCreateDatabase()
     {
-        set_error_handler(array(&$this, 'handleGeoError'));
+        // initial parameters
+        $db_name = 'database_name_test';
+        $db_pass = 'database_pass_test';
 
-        // launching the process
-        foreach ($this->input_global as $dbname => $password) {
-            $this->passDbUtil->create_database($dbname, $password);
+        // creating the database
+        $qdatabase = $this->passDbUtil->create_database($db_name, $db_pass);
 
-            // checking if the file has been created
-            $this->assertTrue(file_exists(sprintf('%s/%s.qdb.enc', $this->db_dir, $dbname)));
+        // checking that a file has been created
+        $this->assertTrue(file_exists("{$this->db_dir}/{$db_name}.qdb.enc"));
 
-            // checking if this same file is encrypted using gpg
-            $res = exec("file " . $this->db_dir . "/{$dbname}.qdb.enc");
-            preg_match('/.*: (GPG symmetrically encrypted data \(AES256 cipher\))$/', $res, $match);
-            // TODO: check why doesn't work on travis-ci
-//            $this->assertEquals(2, count($match));
+        // checking that the file has GPG header
+        $this->assertRegExp('/AES256 cipher/', exec("file {$this->db_dir}/{$db_name}.qdb.enc"));
 
-            // checking entity in database
-            $this->assertNotNull($this->qdatabaseManager->readByDatabaseName($dbname));
-        }
+        // checking that the database has been persisted
+        $this->assertNotNull($this->qdatabaseManager->readByDatabaseName($qdatabase->getDbname()));
+    }
+
+    /**
+     * @expectedException \Querdos\QPassDbBundle\Exception\InvalidParameterException
+     */
+    public function testCreateDatabaseWithNullDbName()
+    {
+        $this->passDbUtil->create_database(null, 'test');
+    }
+
+    /**
+     * @expectedException \Querdos\QPassDbBundle\Exception\InvalidParameterException
+     */
+    public function testCreateDatabaseWithBlankDbName()
+    {
+        $this->passDbUtil->create_database('', 'test');
+    }
+
+    /**
+     * @expectedException \Querdos\QPassDbBundle\Exception\InvalidParameterException
+     */
+    public function testCreateDatabaseWithNullPassword()
+    {
+        $this->passDbUtil->create_database('test', null);
+    }
+
+    /**
+     * @expectedException \Querdos\QPassDbBundle\Exception\InvalidParameterException
+     */
+    public function testCreateDatabaseWithBlankPassword()
+    {
+        $this->passDbUtil->create_database('test', null);
+    }
+
+    /**
+     * @expectedException \Querdos\QPassDbBundle\Exception\ExistingDatabaseException
+     */
+    public function testCreateDatabaseWithExistingDbname()
+    {
+        $this->passDbUtil->create_database('test', 'testpass');
+        $this->passDbUtil->create_database('test', 'test');
     }
 
     /**
@@ -126,31 +163,21 @@ class PassDatabaseUtilTest extends KernelTestCase
      */
     public function testAddPassword()
     {
-        // foreach database
-        foreach ($this->input_global as $dbname => $password) {
-            // creating the database
-            $this->passDbUtil->create_database($dbname, $password);
+        // creating a database
+        $db_name     = "database_name_test";
+        $db_pass     = "database_pass_test";
+        $qdatabase   = $this->passDbUtil->create_database($db_name, $db_pass);
+        $size_before = filesize("{$this->db_dir}/{$db_name}.qdb.enc");
 
-            // retrieving the database
-            $db = $this->qdatabaseManager->readByDatabaseName($dbname);
-            $this->assertNotNull($db);
+        // adding a password
+        $before = count($this->qpasswordManager->allForQDatabase($qdatabase));
+        $this->passDbUtil->add_password($qdatabase, $db_pass, 'test_password', 'label test');
+        $size_after = filesize("{$this->db_dir}/{$db_name}.qdb.enc");
+        $after      = count($this->qpasswordManager->allForQDatabase($qdatabase));
 
-            // adding 5 passwords
-            $qpassword = $this->passDbUtil->add_password($db, $password, uniqid(), 'label test 1');
-            $this->assertNotNull($this->qpasswordManager->readByPassId($qpassword->getPassId()));
-
-            $qpassword = $this->passDbUtil->add_password($db, $password, uniqid(), 'label test 2');
-            $this->assertNotNull($this->qpasswordManager->readByPassId($qpassword->getPassId()));
-
-            $qpassword = $this->passDbUtil->add_password($db, $password, uniqid(), 'label test 3');
-            $this->assertNotNull($this->qpasswordManager->readByPassId($qpassword->getPassId()));
-
-            $qpassword = $this->passDbUtil->add_password($db, $password, uniqid(), 'label test 4');
-            $this->assertNotNull($this->qpasswordManager->readByPassId($qpassword->getPassId()));
-
-            $qpassword = $this->passDbUtil->add_password($db, $password, uniqid(), 'label test 5');
-            $this->assertNotNull($this->qpasswordManager->readByPassId($qpassword->getPassId()));
-        }
+        // checking that a password has been added
+        $this->assertGreaterThan($before, $after);
+        $this->assertGreaterThan($size_before, $size_after);
     }
 
     /**
@@ -158,32 +185,34 @@ class PassDatabaseUtilTest extends KernelTestCase
      */
     public function testGetAllPassword()
     {
+        // creating a database
+        $db_name   = 'test_name';
+        $db_pass   = 'test_pass';
+        $qdatabase = $this->passDbUtil->create_database($db_name, $db_pass);
 
-        $pass_ids = [];
+        // first checking that no passwords is in database
+        $this->assertEquals(0, count($this->passDbUtil->get_all_password($qdatabase, $db_pass)));
 
-        // foreach input global
-        foreach ($this->input_global as $dbname => $password) {
-            // adding database
-            $this->passDbUtil->create_database($dbname, $password);
-            $db = $this->qdatabaseManager->readByDatabaseName($dbname);
+        // add a password
+        $passes[] = uniqid();
+        $passes[] = uniqid();
 
-            // adding 5 passwords by database
-            for ($i = 1; $i <= 5; $i++) {
-                $pass_expected            = uniqid();
-                $pass_ids[$pass_expected] = $this->passDbUtil->add_password($db, $password, $pass_expected, "label test $i");
-            }
+        $labe_1 = uniqid();
+        $labe_2 = uniqid();
 
-            // retrieving all passwords
-            $passwords = $this->passDbUtil->get_all_password($db, $password);
+        $qpassword[] = $this->passDbUtil->add_password($qdatabase, $db_pass, $passes[0], $labe_1);
+        $qpassword[] = $this->passDbUtil->add_password($qdatabase, $db_pass, $passes[1], $labe_2);
 
-            // checking count
-            $this->assertEquals(5, count($passwords));
+        // retrieving all passwords
+        $passwords = $this->passDbUtil->get_all_password($qdatabase, $db_pass);
 
-            // checking each password
-            foreach ($passwords as $p) {
-                $this->assertNotNull($this->qpasswordManager->readByPassId($p['pass_id']));
-            }
-            $pass_ids = [];
+        // checking that 1 passwords has been added
+        $this->assertEquals(2, count($passwords));
+
+        // checking that the password are correct
+        foreach ($passwords as $index => $pass) {
+            $this->assertEquals($pass['pass_id'], $qpassword[$index]->getPassId());
+            $this->assertEquals($pass['password'],$passes[$index]);
         }
     }
 
@@ -192,29 +221,38 @@ class PassDatabaseUtilTest extends KernelTestCase
      */
     public function testRemovePassword()
     {
-        $pass_ids = [];
+        // creating a database
+        $db_name   = uniqid();
+        $db_pass   = uniqid();
+        $qdatabase = $this->passDbUtil->create_database($db_name, $db_pass);
+        $db_file = "{$this->db_dir}/{$qdatabase->getDbname()}.qdb.enc";
 
-        // foreach input global
-        foreach ($this->input_global as $dbname => $password) {
-            // creating the database
-            $this->passDbUtil->create_database($dbname, $password);
-            $db = $this->qdatabaseManager->readByDatabaseName($dbname);
+        // creating two passwords
+        $qpasswords[] = $this->passDbUtil->add_password($qdatabase, $db_pass, uniqid(), uniqid());
+        $qpasswords[] = $this->passDbUtil->add_password($qdatabase, $db_pass, uniqid(), uniqid());
+        $size[] = filesize($db_file);
 
-            // adding 5 passwords by database
-            for ($i = 1; $i <= 5; $i++) {
-                $pass_ids[] = $this->passDbUtil->add_password($db, $password, $pass_ids, "label $i");
-            }
+        // retrieving the count
+        $count = count($this->passDbUtil->get_all_password($qdatabase, $db_pass));
+        $this->assertEquals(2, $count);
 
-            // removing passwords one by one and checking
-            $count = 5;
-            foreach ($pass_ids as $id) {
-                $qpassword = $this->qpasswordManager->readByPassId($id);
-                $this->passDbUtil->remove_password($db, $password, $qpassword);
+        // removing the first password
+        $this->passDbUtil->remove_password($qdatabase, $db_pass, $qpasswords[0]);
+        $size[] = filesize($db_file);
+        $this->assertLessThan($size[0], $size[1]);
 
-                // checking the count
-                $this->assertEquals(--$count, count($this->passDbUtil->get_all_password($db, $password)));
-            }
-        }
+        $count = count($this->passDbUtil->get_all_password($qdatabase, $db_pass));
+        $this->assertEquals(1, $count);
+        $this->assertEquals(1, count($this->qpasswordManager->allForQDatabase($qdatabase)));
+
+        // removing the second password
+        $this->passDbUtil->remove_password($qdatabase, $db_pass, $qpasswords[1]);
+        $size[] = filesize($db_file);
+        $this->assertLessThan($size[1], $size[2]);
+
+        $count = count($this->passDbUtil->get_all_password($qdatabase, $db_pass));
+        $this->assertEquals(0, $count);
+        $this->assertEquals(0, count($this->qpasswordManager->allForQDatabase($qdatabase)));
     }
 
     /**
@@ -222,22 +260,18 @@ class PassDatabaseUtilTest extends KernelTestCase
      */
     public function testGetPassword()
     {
-        // foreach input global
-        foreach ($this->input_global as $dbname => $password) {
-            $this->passDbUtil->create_database($dbname, $password);
-            $db = $this->qdatabaseManager->readByDatabaseName($dbname);
+        // creating a database
+        $db_name = uniqid();
+        $db_pass = uniqid();
+        $qdatabase = $this->passDbUtil->create_database($db_name, $db_pass);
 
-            // adding 5 password by database
-            for ($i = 1; $i <= 5; $i++) {
-                $pass_expected = uniqid();
-                $pass_ids      = $this->passDbUtil->add_password($db, $password, $pass_expected, "label test $i");
-                $qpass         = $this->qpasswordManager->readByPassId($pass_ids);
+        // adding a password
+        $pass_expected = uniqid();
+        $qpassword = $this->passDbUtil->add_password($qdatabase, $db_pass, $pass_expected, uniqid());
 
-                $pass_retrieved = $this->passDbUtil->get_password($db, $password, $qpass);
-
-                $this->assertEquals($pass_expected, $pass_retrieved);
-            }
-        }
+        // retrieving the password
+        $pass_value = $this->passDbUtil->get_password($qdatabase, $db_pass, $qpassword);
+        $this->assertEquals($pass_expected, $pass_value);
     }
 
     protected function tearDown()

@@ -414,7 +414,7 @@ class PassDatabaseUtil
             ->setPrefix("gpg")
             ->setWorkingDirectory($this->db_dir)
             ->setArguments(array(
-                '-c',
+                '--symmetric',
                 '--cipher-algo', 'AES256',
 
                 '--passphrase', $password,

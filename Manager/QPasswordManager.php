@@ -2,6 +2,7 @@
 
 namespace Querdos\QPassDbBundle\Manager;
 
+use Querdos\QPassDbBundle\Entity\QDatabase;
 use Querdos\QPassDbBundle\Entity\QPassword;
 
 /**
@@ -21,5 +22,17 @@ class QPasswordManager extends BaseManager
     public function readByPassId($pass_id)
     {
         return $this->repository->readByPassId($pass_id);
+    }
+
+    /**
+     * Return all QPasswords for the given database
+     *
+     * @param QDatabase $QDatabase
+     *
+     * @return mixed
+     */
+    public function allForQDatabase(QDatabase $QDatabase)
+    {
+        return $this->repository->findByQdatabase($QDatabase);
     }
 }
