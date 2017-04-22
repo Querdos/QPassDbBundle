@@ -79,6 +79,9 @@ class QDatabaseManagerTest extends KernelTestCase
 
         // asserting that the hash is correct
         $this->assertTrue(password_verify($db_pass, $result->getPassword()));
+
+        // checking that the plain password has been erased
+        $this->assertNull($qdatabase->getPlainPassword());
     }
 
     /**
@@ -165,6 +168,46 @@ class QDatabaseManagerTest extends KernelTestCase
 
         // checking that result is null
         $this->assertNull($result);
+    }
+
+    /**
+     * @depends testCreateQDatabase
+     */
+    public function testReadByDatabaseName()
+    {
+        // creating a database
+        $db_name   = uniqid();
+        $db_pass   = uniqid();
+        $qdatabase = new QDatabase($db_name, $db_pass);
+        $this->qdatabaseManager->create($qdatabase);
+
+        // retrieving with the manager
+        $qdb = $this->qdatabaseManager->readByDatabaseName($db_name);
+
+        // first asserting that the result is not null
+        $this->assertNotNull($qdb);
+
+        // building a request with the entity manager
+        /** @var QDatabase $expected */
+        $expected = $this->entityManager
+            ->createQueryBuilder()
+
+            ->select('qdatabase')
+            ->from('QPassDbBundle:QDatabase', 'qdatabase')
+
+            ->where('qdatabase.dbname = :db_name')
+            ->setParameter('db_name', $db_name)
+
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+
+        // the same, first asserting that the result is not null
+        $this->assertNotNull($expected);
+
+        // checking values of both results
+        $this->assertEquals($expected->getDbname(), $qdb->getDbname());
+        $this->assertEquals($expected->getPassword(), $qdb->getPassword());
     }
 
     protected function tearDown()
